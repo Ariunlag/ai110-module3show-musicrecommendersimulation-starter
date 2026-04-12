@@ -2,32 +2,45 @@
 
 ## Project Summary
 
-In this project you will build and explain a small music recommender system.
+In this project, I built a small music recommender system.
 
-Your goal is to:
+Real recommender systems compare user behavior and song data to suggest good matches. My version is simpler. It compares a user's taste profile with song features and gives each song a score. Songs with higher scores are recommended first.
 
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
 
 ---
 
 ## How The System Works
 
-Explain your design in plain language.
+- Each `Song` uses these features: genre, mood, energy, tempo, valence, danceability, and acousticness.
+- My `UserProfile` stores: favorite genre, favorite mood, target energy, and whether the user likes acoustic songs.
+- The `Recommender` gives each song a weighted score. It checks genre match, mood match, energy closeness, and acoustic preference.
+- After scoring all songs, the system sorts them from highest score to lowest score and returns the top songs.
 
-Some prompts to answer:
+```mermaid
+flowchart TD
+   A[Load songs and user profile] --> B[Score each song]
+   B --> C[Check genre mood energy acoustic fit]
+   C --> D[Sort songs by score]
+   D --> E[Return top recommendations]
+```
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+### Algorithm Recipe
 
-You can include a simple diagram or bullet list if helpful.
+1. Load all songs from `data/songs.csv`.
+2. Read the user profile: favorite genre, favorite mood, target energy, and `likes_acoustic`.
+3. For each song, calculate:
+   - `genre_match`: 1 if genre matches, else 0
+   - `mood_match`: 1 if mood matches, else 0
+   - `energy_fit`: `1 - abs(song_energy - target_energy)`
+   - `acoustic_fit`: `song_acousticness` if user likes acoustic, otherwise `1 - song_acousticness`
+4. Compute final score with simple weights:
+   - `score = 0.35*genre_match + 0.25*mood_match + 0.25*energy_fit + 0.15*acoustic_fit`
+5. Sort songs by score from high to low.
+6. Return top `k` songs and a short explanation.
+
+### Bias Note
+
+This system might over-prioritize genre and miss good songs that match the user's mood and energy but use a different genre label.
 
 ---
 
